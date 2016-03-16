@@ -7,7 +7,6 @@ module.exports = function (data, tile, writeData, done) {
 
     var numFeatures = 0;
     var numBad = 0;
-    var numErrors = 0;
 
     for (var i = 0; i < layer.length; i++) {
         var feature = layer.feature(i);
@@ -16,11 +15,11 @@ module.exports = function (data, tile, writeData, done) {
         var polygons = feature.loadGeometry();
 
         for (var j = 0; j < polygons.length; j++) {
-            var data = flatten(polygons[j]);
+            var polygon = flatten(polygons[j]);
 
             numFeatures++;
-            var triangles = earcut(data.vertices, data.holes);
-            var deviation = earcut.deviation(data.vertices, data.holes, 2, triangles);
+            var triangles = earcut(polygon.vertices, polygon.holes);
+            var deviation = earcut.deviation(polygon.vertices, polygon.holes, 2, triangles);
             if (deviation !== 0) {
                 numBad++;
                 writeData(JSON.stringify({
