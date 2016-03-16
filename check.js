@@ -5,6 +5,11 @@ var earcut = require('earcut');
 module.exports = function (data, tile, writeData, done) {
     var layer = data.source[global.mapOptions.layerName];
 
+    if (!layer) {
+        done();
+        return;
+    }
+
     var numFeatures = 0;
     var numBad = 0;
 
