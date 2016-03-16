@@ -3,8 +3,13 @@
 var tilereduce = require('tile-reduce');
 var path = require('path');
 
-var tilePath = '../mbtiles/us-west-polygons.mbtiles';
-var layerName = 'osm';
+if (process.argv.length !== 4) {
+    console.error('Usage: node index.js file.mbtiles layer_name > output.json');
+    return;
+}
+
+var tilePath = process.argv[2];
+var layerName = process.argv[3];
 
 var stats = {
     numFeatures: 0,
