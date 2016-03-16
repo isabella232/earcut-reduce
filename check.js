@@ -3,34 +3,33 @@
 var earcut = require('earcut');
 
 module.exports = function (data, tile, writeData, done) {
-    var layer = data.source[global.mapOptions.layerName];
-
-    if (!layer) {
-        done();
-        return;
-    }
-
     var numFeatures = 0;
     var numBad = 0;
 
-    for (var i = 0; i < layer.length; i++) {
-        var feature = layer.feature(i);
-        if (feature.type !== 3) continue;
+    for (var layerId in data.source) {
+        if (global.mapOptions.layerId && layerId !== global.mapOptions.layerId) continue;
 
-        var polygons = feature.loadGeometry();
+        var layer = data.source[layerId];
 
-        for (var j = 0; j < polygons.length; j++) {
-            var polygon = flatten(polygons[j]);
+        for (var i = 0; i < layer.length; i++) {
+            var feature = layer.feature(i);
+            if (feature.type !== 3) continue;
 
-            numFeatures++;
-            var triangles = earcut(polygon.vertices, polygon.holes);
-            var deviation = earcut.deviation(polygon.vertices, polygon.holes, 2, triangles);
-            if (deviation !== 0) {
-                numBad++;
-                writeData(JSON.stringify({
-                    deviation: deviation,
-                    coords: toJSON(polygons[j])
-                }) + '\n');
+            var polygons = feature.loadGeometry();
+
+            for (var j = 0; j < polygons.length; j++) {
+                var polygon = flatten(polygons[j]);
+
+                numFeatures++;
+                var triangles = earcut(polygon.vertices, polygon.holes);
+                var deviation = earcut.deviation(polygon.vertices, polygon.holes, 2, triangles);
+                if (deviation !== 0) {
+                    numBad++;
+                    writeData(JSON.stringify({
+                        deviation: deviation,
+                        coords: toJSON(polygons[j])
+                    }) + '\n');
+                }
             }
         }
     }
