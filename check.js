@@ -26,7 +26,7 @@ module.exports = function (data, tile, writeData, done) {
                 if (deviation !== 0) {
                     numBad++;
                     writeData(JSON.stringify({
-                        deviation: deviation,
+                        deviation: Math.round(deviation * 1e8) / 1e8,
                         coords: toJSON(polygons[j])
                     }) + '\n');
                 }
