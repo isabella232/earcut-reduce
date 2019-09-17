@@ -1,6 +1,6 @@
 'use strict';
 
-var tilereduce = require('tile-reduce');
+var tilereduce = require('@mapbox/tile-reduce');
 var path = require('path');
 
 if (process.argv.length < 3) {
