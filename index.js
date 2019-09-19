@@ -1,17 +1,16 @@
-'use strict';
 
-var tilereduce = require('@mapbox/tile-reduce');
-var path = require('path');
+const tilereduce = require('@mapbox/tile-reduce');
+const path = require('path');
 
 if (process.argv.length < 3) {
     console.error('Usage: node index.js file.mbtiles [layer_id] > output.json');
-    return;
+    process.exit(); // eslint-disable-line
 }
 
-var tilePath = process.argv[2];
-var layerId = process.argv[3];
+const tilePath = process.argv[2];
+const layerId = process.argv[3];
 
-var stats = {
+const stats = {
     numFeatures: 0,
     numBad: 0
 };
@@ -19,12 +18,10 @@ var stats = {
 tilereduce({
     map: path.join(__dirname, 'check.js'),
     sources: [{name: 'source', mbtiles: path.join(__dirname, tilePath), raw: true}],
-    mapOptions: {layerId: layerId}
-})
-.on('reduce', function (result) {
+    mapOptions: {layerId}
+}).on('reduce', (result) => {
     stats.numFeatures += result.numFeatures;
     stats.numBad += result.numBad;
-})
-.on('end', function () {
+}).on('end', () => {
     console.error(JSON.stringify(stats, null, 2));
 });

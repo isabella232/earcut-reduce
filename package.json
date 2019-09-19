@@ -4,18 +4,18 @@
   "description": "A tile-reduce script to check polygons in vector tiles against Earcut",
   "main": "index.js",
   "scripts": {
-    "test": "eslint *.js"
+    "test": "eslint --fix *.js"
   },
   "keywords": [],
   "author": "Vladimir Agafonkin",
   "license": "ISC",
   "dependencies": {
-    "earcut": "mapbox/earcut#master",
-    "tile-reduce": "mapbox/tile-reduce#classify-rings"
+    "earcut": "^2.2.1",
+    "@mapbox/tile-reduce": "^3.3.0"
   },
   "devDependencies": {
-    "eslint": "^2.4.0",
-    "eslint-config-mourner": "^2.0.0"
+    "eslint": "^6.4.0",
+    "eslint-config-mourner": "^3.0.0"
   },
   "eslintConfig": {
     "extends": "mourner"

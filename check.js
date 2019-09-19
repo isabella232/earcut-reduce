@@ -1,51 +1,48 @@
 'use strict';
 
-var earcut = require('earcut');
+const earcut = require('earcut');
 
 module.exports = function (data, tile, writeData, done) {
-    var numFeatures = 0;
-    var numBad = 0;
+    let numFeatures = 0;
+    let numBad = 0;
 
-    for (var layerId in data.source) {
+    for (const layerId in data.source) {
         if (global.mapOptions.layerId && layerId !== global.mapOptions.layerId) continue;
 
-        var layer = data.source[layerId];
+        const layer = data.source[layerId];
 
-        for (var i = 0; i < layer.length; i++) {
-            var feature = layer.feature(i);
+        for (let i = 0; i < layer.length; i++) {
+            const feature = layer.feature(i);
             if (feature.type !== 3) continue;
 
-            var polygons = classifyRings(feature.loadGeometry());
+            const polygons = classifyRings(feature.loadGeometry());
 
-            for (var j = 0; j < polygons.length; j++) {
-                var polygon = flatten(polygons[j]);
+            for (let j = 0; j < polygons.length; j++) {
+                const polygon = flatten(polygons[j]);
 
                 numFeatures++;
-                var triangles = earcut(polygon.vertices, polygon.holes);
-                var deviation = earcut.deviation(polygon.vertices, polygon.holes, 2, triangles);
+                const triangles = earcut(polygon.vertices, polygon.holes);
+                const deviation = earcut.deviation(polygon.vertices, polygon.holes, 2, triangles);
                 if (deviation !== 0) {
                     numBad++;
-                    writeData(JSON.stringify({
-                        deviation: Math.round(deviation * 1e8) / 1e8,
-                        coords: toJSON(polygons[j])
-                    }) + '\n');
+                    writeData(`${JSON.stringify(toJSON(polygons[j]))  }\n`);
                 }
             }
         }
     }
 
     done(null, {
-        numFeatures: numFeatures,
-        numBad: numBad
+        numFeatures,
+        numBad
     });
 };
 
 function toJSON(polygon) {
-    var result = [];
-    for (var i = 0; i < polygon.length; i++) {
-        var ring = [];
-        for (var j = 0; j < polygon[i].length; j++) {
-            var p = polygon[i][j];
+    const result = [];
+    for (let i = 0; i < polygon.length; i++) {
+        const ring = [];
+        for (let j = 0; j < polygon[i].length; j++) {
+            const p = polygon[i][j];
             ring.push([p.x, p.y]);
         }
         result.push(ring);
@@ -54,11 +51,11 @@ function toJSON(polygon) {
 }
 
 function flatten(data) {
-    var result = {vertices: [], holes: []},
-        holeIndex = 0;
+    const result = {vertices: [], holes: []};
+    let holeIndex = 0;
 
-    for (var i = 0; i < data.length; i++) {
-        for (var j = 0; j < data[i].length; j++) {
+    for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].length; j++) {
             result.vertices.push(data[i][j].x);
             result.vertices.push(data[i][j].y);
         }
@@ -71,16 +68,15 @@ function flatten(data) {
 }
 
 function classifyRings(rings) {
-    var len = rings.length;
+    const len = rings.length;
 
     if (len <= 1) return [rings];
 
-    var polygons = [],
-        polygon,
-        ccw;
+    const polygons = [];
+    let polygon, ccw;
 
-    for (var i = 0; i < len; i++) {
-        var area = signedArea(rings[i]);
+    for (let i = 0; i < len; i++) {
+        const area = signedArea(rings[i]);
         if (area === 0) continue;
 
         if (ccw === undefined) ccw = area < 0;
@@ -99,8 +95,8 @@ function classifyRings(rings) {
 }
 
 function signedArea(ring) {
-    var sum = 0;
-    for (var i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
+    let sum = 0;
+    for (let i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
         p1 = ring[i];
         p2 = ring[j];
         sum += (p2.x - p1.x) * (p1.y + p2.y);
